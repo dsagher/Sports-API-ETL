@@ -14,7 +14,7 @@ def transform_leagues(data):
         country = league['country']
         seasons = league['seasons'][0]
         coverage = league['seasons'][0]['coverage']
-        fixtures = league['seaon']
+        fixtures = league['seaon2']
 
 
         transformed_data.append({
