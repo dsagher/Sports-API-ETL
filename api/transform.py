@@ -15,7 +15,7 @@ def transform_leagues(data):
         seasons = league['seasons'][0]
         coverage = league['seasons'][0]['coverage']
         fixtures = league['season2']
-        # lalalala
+        # lalala
 
 
         transformed_data.append({
