@@ -1,0 +1,10 @@
+.env
+leagues.json
+players_*
+teams_*
+processed_data/
+api/transform.ipynb
+*.db
+__pycache__/
+.DS_Store
+.vscode/
