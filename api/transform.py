@@ -14,33 +14,30 @@ def transform_leagues(data):
         country = league['country']
         seasons = league['seasons'][0]
         coverage = league['seasons'][0]['coverage']
-        fixtures = league['season2']
-        # lalala
-
 
         transformed_data.append({
-            'league_id': league['league']['id'],
-            'league_name': league['league']['name'],
-            'league_type': league['league']['type'],
-            'league_logo': league['league']['logo'],
-            'country_name': league['country']['name'],
-            'country_code': league['country']['code'],
-            'country_flag': league['country']['flag'],
-            'season_year': league['seasons'][0]['year'],
-            'season_start': league['seasons'][0]['start'],
-            'season_end': league['seasons'][0]['end'],
-            'season_current': league['seasons'][0]['current'],
-            'season_events': league['seasons'][0]['coverage']['fixtures']['events'],
-            'season_lineups': league['seasons'][0]['coverage']['fixtures']['lineups'],
-            'season_statistics_fixtures': league['seasons'][0]['coverage']['fixtures']['statistics_fixtures'],
-            'season_statistics_players': league['seasons'][0]['coverage']['fixtures']['statistics_players'],
-            'season_standings': league['seasons'][0]['coverage']['standings'],
-            'season_players': league['seasons'][0]['coverage']['players'],
-            'season_top_scorers': league['seasons'][0]['coverage']['top_scorers'],
-            'season_top_assists': league['seasons'][0]['coverage']['top_assists'],
-            'season_top_cards': league['seasons'][0]['coverage']['top_cards'],
-            'season_injuries': league['seasons'][0]['coverage']['injuries'],
-            'season_predictions': league['seasons'][0]['coverage']['predictions'],
+            'league_id': league['id'],
+            'league_name': league['name'],
+            'league_type': league['type'],
+            'league_logo': league['logo'],
+            'country_name': country['name'],
+            'country_code': country['code'],
+            'country_flag': country['flag'],
+            'season_year': seasons['year'],
+            'season_start': seasons['start'],
+            'season_end': seasons['end'],
+            'season_current': seasons['current'],
+            'season_events': coverage['fixtures']['events'],
+            'season_lineups': coverage['fixtures']['lineups'],
+            'season_statistics_fixtures': coverage['fixtures']['statistics_fixtures'],
+            'season_statistics_players': coverage['fixtures']['statistics_players'],
+            'season_standings': coverage['standings'],
+            'season_players': coverage['players'],
+            'season_top_scorers': coverage['top_scorers'],
+            'season_top_assists': coverage['top_assists'],
+            'season_top_cards': coverage['top_cards'],
+            'season_injuries': coverage['injuries'],
+            'season_predictions': coverage['predictions'],
         })
 
 
