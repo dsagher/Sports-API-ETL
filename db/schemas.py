@@ -26,7 +26,8 @@ def create_tables(conn):
             season_top_cards BOOLEAN,
             season_injuries BOOLEAN,
             season_predictions BOOLEAN,
-            PRIMARY KEY (league_id, season_year)
+            date_pulled TEXT,
+            PRIMARY KEY (league_id, season_year, date_pulled)
         )""")
 
     cursor.execute("""
@@ -90,7 +91,8 @@ def create_tables(conn):
             player_penalties_scored INTEGER,
             player_penalties_missed INTEGER,
             player_penalties_saved INTEGER,
-            PRIMARY KEY (league_id, year, player_id)
+            date_pulled TEXT,
+            PRIMARY KEY (league_id, year, player_id, date_pulled)
         )""")
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS teams (
@@ -109,7 +111,8 @@ def create_tables(conn):
         team_venue_city TEXT,
         team_venue_surface TEXT,
         team_venue_image TEXT,
-        PRIMARY KEY (league_id, year, team_id)
+        date_pulled TEXT,
+        PRIMARY KEY (league_id, year, team_id, date_pulled)
         )""")
     conn.commit()
     conn.close()

@@ -20,7 +20,8 @@ league = ['league_id',
                 'season_top_assists',
                 'season_top_cards',
                 'season_injuries',
-                'season_predictions']
+                'season_predictions',
+                'date_pulled']
 
 players = [
             'league_id',
@@ -82,6 +83,7 @@ players = [
             'player_penalties_scored',
             'player_penalties_missed',
             'player_penalties_saved',
+            'date_pulled'
 ]
 
 teams = ['league_id',
@@ -98,4 +100,5 @@ teams = ['league_id',
                 'team_venue_address',
                 'team_venue_city',
                 'team_venue_surface',
-                'team_venue_image']
+                'team_venue_image',
+                'date_pulled']

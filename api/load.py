@@ -1,18 +1,13 @@
 import sqlite3
 import tomllib
 import pandas as pd
+from typing import Literal
 
-def load_data(leagues_df, players_df, teams_df):
+
+def load_data(df:pd.DataFrame, df_name: Literal["leagues","players","teams"]):
+
     conn = sqlite3.connect('football.db')
-    leagues_df.to_sql('leagues', conn, if_exists='append', index=False)
-    players_df.to_sql('players', conn, if_exists='append', index=False)
-    teams_df.to_sql('teams', conn, if_exists='append', index=False)
-    conn.close()
 
-    print("Data loaded successfully")
-
-def load_data_2(df:pd.DataFrame, df_name: str):
-    conn = sqlite3.connect('football.db')
     cursor = conn.cursor()
     
     with open('./config.toml', 'rb') as f:
@@ -26,21 +21,31 @@ def load_data_2(df:pd.DataFrame, df_name: str):
         elif df_name == "teams":
             columns = config['columns']['teams']
             values = ["?" for _ in columns]
-    
+
     ordered = df[columns]
 
     rows = list(ordered.itertuples(index=False, name=None))
 
     col_str = ", ".join(columns)        
     placeholders = ", ".join(values)   
-    sql = f"INSERT INTO leagues ({col_str}) VALUES ({placeholders});"
+    sql = f"INSERT INTO {df_name} ({col_str}) VALUES ({placeholders});"
 
-    cursor.executemany(sql, rows)
+    try:
+        cursor.executemany(sql, rows)
+    except sqlite3.IntegrityError as e:
+        print(f"Error executing SQL statement: {e}")
+        conn.close()
+        return
+    
     conn.commit()
     conn.close()
     print("Leagues loaded successfully from DataFrame")
 
+def write_to_csv(df: pd.DataFrame, df_name: str, league_id: int, season_year: int) -> None:
+    df.to_csv(f"processed_data/{df_name}_{league_id}_{season_year}.csv")
+    print("Successfully wrote to CSV.")
+
 if __name__ == "__main__":
     leagues = pd.read_csv('processed_data/leagues.csv')
-    load_data_2(leagues, "leagues")
+    load_data(leagues, "leagues")
     # pass

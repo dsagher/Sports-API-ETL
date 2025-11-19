@@ -16,18 +16,26 @@ HEADERS = {
 }
 
 
-def get_leagues() -> dict:
+
+def get_leagues(league_id: int) -> dict:
     """
     Get all leagues from the API
 
     Returns:
         data: dict
     """
+    DATE_PULLED = datetime.datetime.now().strftime('%m/%d/%Y')
 
-    url = f"{BASE_URL}/leagues"
+    url = f"{BASE_URL}/leagues?id={league_id}"
+
     response = requests.get(url, headers=HEADERS)
+
     response.raise_for_status()
+
     data = response.json()
+
+    data['date_pulled'] = DATE_PULLED
+
     return data
 
 def get_players_by_league_season(league_id: int, season_year: int) -> dict:
@@ -37,6 +45,7 @@ def get_players_by_league_season(league_id: int, season_year: int) -> dict:
     Returns:
         data: dict
     """
+    DATE_PULLED = datetime.datetime.now().strftime('%m/%d/%Y')
 
     url = f"{BASE_URL}/players?season={season_year}&league={league_id}"
 
@@ -44,8 +53,13 @@ def get_players_by_league_season(league_id: int, season_year: int) -> dict:
         raise ValueError("Season year must be between 2021 and 2023")
 
     response = requests.get(url, headers=HEADERS)
+
     response.raise_for_status()
+
     data = response.json()
+
+    data['date_pulled'] = DATE_PULLED
+
     return data
 
 def get_teams_by_league_season(league_id: int, season_year: int) -> dict:
@@ -55,6 +69,7 @@ def get_teams_by_league_season(league_id: int, season_year: int) -> dict:
     Returns:
         data: dict
     """
+    DATE_PULLED = datetime.datetime.now().strftime('%m/%d/%Y')
 
     url = f"{BASE_URL}/teams?league={league_id}&season={season_year}"
 
@@ -62,6 +77,11 @@ def get_teams_by_league_season(league_id: int, season_year: int) -> dict:
         raise ValueError("Season year must be between 2021 and 2023")
 
     response = requests.get(url, headers=HEADERS)
+
     response.raise_for_status()
+
     data = response.json()
+
+    data['date_pulled'] = DATE_PULLED
+
     return data

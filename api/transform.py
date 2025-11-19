@@ -5,8 +5,7 @@ import tomllib
 def transform_leagues(data):
 
     response = data['response']
-
-    # england_leagues = [i for i in response if i['country']['name'] == 'England']
+    date_pulled = data['date_pulled']
     transformed_data = []
 
     for l in response:
@@ -16,6 +15,7 @@ def transform_leagues(data):
         coverage = l['seasons'][0]['coverage']
 
         transformed_data.append({
+            'date_pulled': date_pulled,
             'league_id': league['id'],
             'league_name': league['name'],
             'league_type': league['type'],
@@ -49,10 +49,10 @@ def transform_players(data):
 
     year = data['parameters']['season']
     league = data['parameters']['league']
+    date_pulled = data['date_pulled']
 
     transformed_data = []
     for p in data['response']:
-
         player = p['player']
         stats_team = p['statistics'][0]['team']
         stats_league = p['statistics'][0]['league']
@@ -69,6 +69,7 @@ def transform_players(data):
         stats_penalty = p['statistics'][0]['penalty']
 
         transformed_data.append({
+            'date_pulled': date_pulled,
             'league_id': league,
             'year': year,
             'player_id': player['id'],
@@ -127,7 +128,7 @@ def transform_players(data):
             'player_penalties_commited': stats_penalty['commited'],
             'player_penalties_scored': stats_penalty['scored'],
             'player_penalties_missed': stats_penalty['missed'],
-            'player_penalties_saved': stats_penalty['saved'],
+            'player_penalties_saved': stats_penalty['saved']
         })
 
     players_df = pd.DataFrame(transformed_data)
@@ -137,13 +138,14 @@ def transform_teams(data):
 
     year = data['parameters']['season']
     league = data['parameters']['league']
-
+    date_pulled = data['date_pulled']
     transformed_data = []
 
     for t in data['response']:
         team = t['team']
         venue = t['venue']
         transformed_data.append({
+            'date_pulled': date_pulled,
             'league_id': league,
             'year': year,
             'team_id': team['id'],
