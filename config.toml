@@ -1,4 +1,5 @@
-league_columns = ['league_id',
+[columns]
+league = ['league_id',
                 'league_name',
                 'league_type',
                 'league_logo',
@@ -21,8 +22,7 @@ league_columns = ['league_id',
                 'season_injuries',
                 'season_predictions']
 
-
-players_columns = [
+players = [
             'league_id',
             'year',
             'player_id',
@@ -84,7 +84,7 @@ players_columns = [
             'player_penalties_saved',
 ]
 
-teams_columns = ['league_id',
+teams = ['league_id',
                 'year',
                 'team_id',
                 'team_name',

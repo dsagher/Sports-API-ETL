@@ -6,14 +6,14 @@ def transform_leagues(data):
 
     response = data['response']
 
-    england_leagues = [i for i in response if i['country']['name'] == 'England']
+    # england_leagues = [i for i in response if i['country']['name'] == 'England']
     transformed_data = []
 
-    for league in england_leagues:
-        league = league['league']
-        country = league['country']
-        seasons = league['seasons'][0]
-        coverage = league['seasons'][0]['coverage']
+    for l in response:
+        league = l['league']
+        country = l['country']
+        seasons = l['seasons'][0]
+        coverage = l['seasons'][0]['coverage']
 
         transformed_data.append({
             'league_id': league['id'],
@@ -51,67 +51,83 @@ def transform_players(data):
     league = data['parameters']['league']
 
     transformed_data = []
-    for player in data['response']:
+    for p in data['response']:
+
+        player = p['player']
+        stats_team = p['statistics'][0]['team']
+        stats_league = p['statistics'][0]['league']
+        stats_games = p['statistics'][0]['games']
+        stats_subs = p['statistics'][0]['substitutes']
+        stats_shots = p['statistics'][0]['shots']
+        stats_goals = p['statistics'][0]['goals']
+        stats_passes = p['statistics'][0]['passes']
+        stats_tackles = p['statistics'][0]['tackles']
+        stats_duels = p['statistics'][0]['duels']
+        stats_dribbles = p['statistics'][0]['dribbles']
+        stats_fouls = p['statistics'][0]['fouls']
+        stats_cards = p['statistics'][0]['cards']
+        stats_penalty = p['statistics'][0]['penalty']
+
         transformed_data.append({
             'league_id': league,
             'year': year,
-            'player_id': player['player']['id'],
-            'player_name': player['player']['name'],
-            'player_age': player['player']['age'],
-            'player_nationality': player['player']['nationality'],
-            'player_photo': player['player']['photo'],
-            'player_birth_date': player['player']['birth']['date'],
-            'player_birth_place': player['player']['birth']['place'],
-            'player_birth_country': player['player']['birth']['country'],
-            'player_height': player['player']['height'],
-            'player_weight': player['player']['weight'],
-            'player_injured': player['player']['injured'],
-            'player_team': player['statistics'][0]['team']['id'],
-            'player_team_name': player['statistics'][0]['team']['name'],
-            'player_team_logo': player['statistics'][0]['team']['logo'],
-            'player_league': player['statistics'][0]['league']['id'],
-            'player_league_name': player['statistics'][0]['league']['name'],
-            'player_league_country': player['statistics'][0]['league']['country'],
-            'player_league_logo': player['statistics'][0]['league']['logo'],
-            'player_league_flag': player['statistics'][0]['league']['flag'],
-            'player_league_season': player['statistics'][0]['league']['season'],
-            'player_games_played': player['statistics'][0]['games']['appearences'],
-            'player_minutes_played': player['statistics'][0]['games']['minutes'],
-            'player_lineups': player['statistics'][0]['games']['lineups'],
-            'player_number': player['statistics'][0]['games']['number'],
-            'player_position': player['statistics'][0]['games']['position'],
-            'player_rating': player['statistics'][0]['games']['rating'],
-            'player_captain': player['statistics'][0]['games']['captain'],
-            'player_sub_in': player['statistics'][0]['substitutes']['in'],
-            'player_sub_out': player['statistics'][0]['substitutes']['out'],
-            'player_sub_on_bench': player['statistics'][0]['substitutes']['bench'],
-            'player_shots_total': player['statistics'][0]['shots']['total'],
-            'player_shots_on': player['statistics'][0]['shots']['on'],
-            'player_goals_total': player['statistics'][0]['goals']['total'],
-            'player_goals_conceded': player['statistics'][0]['goals']['conceded'],
-            'player_goals_assists': player['statistics'][0]['goals']['assists'],
-            'player_saves': player['statistics'][0]['goals']['saves'],
-            'player_passes_total': player['statistics'][0]['passes']['total'],
-            'player_passes_key': player['statistics'][0]['passes']['key'],
-            'player_passes_accuracy': player['statistics'][0]['passes']['accuracy'],
-            'player_tackles_total': player['statistics'][0]['tackles']['total'],
-            'player_tackles_blocks': player['statistics'][0]['tackles']['blocks'],
-            'player_tackles_interceptions': player['statistics'][0]['tackles']['interceptions'],
-            'player_duels_total': player['statistics'][0]['duels']['total'],
-            'player_duels_won': player['statistics'][0]['duels']['won'],
-            'player_dribbles_attempts': player['statistics'][0]['dribbles']['attempts'],
-            'player_dribbles_success': player['statistics'][0]['dribbles']['success'],
-            'player_dribbles_past': player['statistics'][0]['dribbles']['past'],
-            'player_fouls_committed': player['statistics'][0]['fouls']['committed'],
-            'player_fouls_drawn': player['statistics'][0]['fouls']['drawn'],
-            'player_cards_yellow': player['statistics'][0]['cards']['yellow'],
-            'player_cards_yellow_red': player['statistics'][0]['cards']['yellowred'],
-            'player_cards_red': player['statistics'][0]['cards']['red'],
-            'player_penalties_won': player['statistics'][0]['penalty']['won'],
-            'player_penalties_commited': player['statistics'][0]['penalty']['commited'],
-            'player_penalties_scored': player['statistics'][0]['penalty']['scored'],
-            'player_penalties_missed': player['statistics'][0]['penalty']['missed'],
-            'player_penalties_saved': player['statistics'][0]['penalty']['saved'],
+            'player_id': player['id'],
+            'player_name': player['name'],
+            'player_age': player['age'],
+            'player_nationality': player['nationality'],
+            'player_photo': player['photo'],
+            'player_birth_date': player['birth']['date'],
+            'player_birth_place': player['birth']['place'],
+            'player_birth_country': player['birth']['country'],
+            'player_height': player['height'],
+            'player_weight': player['weight'],
+            'player_injured': player['injured'],
+            'player_team': stats_team['id'],
+            'player_team_name': stats_team['name'],
+            'player_team_logo': stats_team['logo'],
+            'player_league': stats_league['id'],
+            'player_league_name': stats_league['name'],
+            'player_league_country': stats_league['country'],
+            'player_league_logo': stats_league['logo'],
+            'player_league_flag': stats_league['flag'],
+            'player_league_season': stats_league['season'],
+            'player_games_played': stats_games['appearences'],
+            'player_minutes_played': stats_games['minutes'],
+            'player_lineups': stats_games['lineups'],
+            'player_number': stats_games['number'],
+            'player_position': stats_games['position'],
+            'player_rating': stats_games['rating'],
+            'player_captain': stats_games['captain'],
+            'player_sub_in': stats_subs['in'],
+            'player_sub_out': stats_subs['out'],
+            'player_sub_on_bench': stats_subs['bench'],
+            'player_shots_total': stats_shots['total'],
+            'player_shots_on': stats_shots['on'],
+            'player_goals_total': stats_goals['total'],
+            'player_goals_conceded': stats_goals['conceded'],
+            'player_goals_assists': stats_goals['assists'],
+            'player_saves': stats_goals['saves'],
+            'player_passes_total': stats_passes['total'],
+            'player_passes_key': stats_passes['key'],
+            'player_passes_accuracy': stats_passes['accuracy'],
+            'player_tackles_total': stats_tackles['total'],
+            'player_tackles_blocks': stats_tackles['blocks'],
+            'player_tackles_interceptions': stats_tackles['interceptions'],
+            'player_duels_total': stats_duels['total'],
+            'player_duels_won': stats_duels['won'],
+            'player_dribbles_attempts': stats_dribbles['attempts'],
+            'player_dribbles_success': stats_dribbles['success'],
+            'player_dribbles_past': stats_dribbles['past'],
+            'player_fouls_committed': stats_fouls['committed'],
+            'player_fouls_drawn': stats_fouls['drawn'],
+            'player_cards_yellow': stats_cards['yellow'],
+            'player_cards_yellow_red': stats_cards['yellowred'],
+            'player_cards_red': stats_cards['red'],
+            'player_penalties_won': stats_penalty['won'],
+            'player_penalties_commited': stats_penalty['commited'],
+            'player_penalties_scored': stats_penalty['scored'],
+            'player_penalties_missed': stats_penalty['missed'],
+            'player_penalties_saved': stats_penalty['saved'],
         })
 
     players_df = pd.DataFrame(transformed_data)
@@ -124,23 +140,25 @@ def transform_teams(data):
 
     transformed_data = []
 
-    for team in data['response']:
+    for t in data['response']:
+        team = t['team']
+        venue = t['venue']
         transformed_data.append({
             'league_id': league,
             'year': year,
-            'team_id': team['team']['id'],
-            'team_name': team['team']['name'],
-            'team_logo': team['team']['logo'],
-            'team_code': team['team']['code'],
-            'team_country': team['team']['country'],
-            'team_founded': team['team']['founded'],
-            'team_national': team['team']['national'],
-            'team_venue_id': team['venue']['id'],
-            'team_venue_name': team['venue']['name'],
-            'team_venue_address': team['venue']['address'],
-            'team_venue_city': team['venue']['city'],
-            'team_venue_surface': team['venue']['surface'],
-            'team_venue_image': team['venue']['image'],
+            'team_id': team['id'],
+            'team_name': team['name'],
+            'team_logo': team['logo'],
+            'team_code': team['code'],
+            'team_country': team['country'],
+            'team_founded': team['founded'],
+            'team_national': team['national'],
+            'team_venue_id': venue['id'],
+            'team_venue_name': venue['name'],
+            'team_venue_address': venue['address'],
+            'team_venue_city': venue['city'],
+            'team_venue_surface': venue['surface'],
+            'team_venue_image': venue['image'],
         })
 
     teams_df = pd.DataFrame(transformed_data)
