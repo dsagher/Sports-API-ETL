@@ -1,8 +1,40 @@
 import sqlite3
+import logging
+import tomllib
+from pathlib import Path
+from typing import Optional
 
-def create_tables(conn):
-    cursor = conn.cursor()
-    cursor.execute("""
+logger = logging.getLogger(__name__)
+
+
+def _load_config() -> dict:
+    """Load configuration from config.toml"""
+    config_path = Path(__file__).parent.parent / "config.toml"
+    with open(config_path, 'rb') as f:
+        return tomllib.load(f)
+
+
+def create_tables(conn: Optional[sqlite3.Connection] = None) -> bool:
+    """
+    Create database tables for leagues, players, and teams.
+    
+    Args:
+        conn: Optional database connection. If None, creates a new connection.
+    
+    Returns:
+        True if tables were created successfully
+    """
+    if conn is None:
+        config = _load_config()
+        db_path = config['database']['path']
+        conn = sqlite3.connect(db_path)
+        should_close = True
+    else:
+        should_close = False
+    
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
         CREATE TABLE IF NOT EXISTS leagues (
             league_id INTEGER,
             league_name TEXT,
@@ -30,7 +62,7 @@ def create_tables(conn):
             PRIMARY KEY (league_id, season_year, date_pulled)
         )""")
 
-    cursor.execute("""
+        cursor.execute("""
         CREATE TABLE IF NOT EXISTS players (
             league_id INTEGER,
             year INTEGER,  
@@ -94,7 +126,7 @@ def create_tables(conn):
             date_pulled TEXT,
             PRIMARY KEY (league_id, year, player_id, date_pulled)
         )""")
-    cursor.execute("""
+        cursor.execute("""
         CREATE TABLE IF NOT EXISTS teams (
         league_id INTEGER,
         year INTEGER,
@@ -114,24 +146,63 @@ def create_tables(conn):
         date_pulled TEXT,
         PRIMARY KEY (league_id, year, team_id, date_pulled)
         )""")
-    conn.commit()
-    conn.close()
-    print("Tables created successfully")
-    return True
+        cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_leagues_league_id_season_year_date_pulled ON leagues (league_id, season_year, date_pulled)
+        """)
+        cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_players_league_id_year_player_id_date_pulled ON players (league_id, year, player_id, date_pulled)
+        """)
+        cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_teams_league_id_year_team_id_date_pulled ON teams (league_id, year, team_id, date_pulled)
+        """)
+        conn.commit()
+        logger.info("Tables created successfully")
+        return True
+    except sqlite3.Error as e:
+        logger.error(f"Error creating tables: {e}")
+        raise
+    finally:
+        if should_close:
+            conn.close()
 
 
-def drop_tables(conn):
-    cursor = conn.cursor()
-    cursor.execute("DROP TABLE IF EXISTS leagues")
-    cursor.execute("DROP TABLE IF EXISTS players")
-    cursor.execute("DROP TABLE IF EXISTS teams")
-    conn.commit()
-    conn.close()
-    print("Tables dropped successfully")
+def drop_tables(conn: Optional[sqlite3.Connection] = None) -> None:
+    """
+    Drop all database tables.
+    
+    Args:
+        conn: Optional database connection. If None, creates a new connection.
+    """
+    if conn is None:
+        config = _load_config()
+        db_path = config['database']['path']
+        conn = sqlite3.connect(db_path)
+        should_close = True
+    else:
+        should_close = False
+    
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DROP TABLE IF EXISTS leagues")
+        cursor.execute("DROP TABLE IF EXISTS players")
+        cursor.execute("DROP TABLE IF EXISTS teams")
+        conn.commit()
+        logger.info("Tables dropped successfully")
+    except sqlite3.Error as e:
+        logger.error(f"Error dropping tables: {e}")
+        raise
+    finally:
+        if should_close:
+            conn.close()
+
 
 if __name__ == "__main__":
-    conn = sqlite3.connect('football.db')
-    drop_tables(conn)
-    conn = sqlite3.connect('football.db')
-    create_tables(conn)
-    conn.close()
+    logging.basicConfig(level=logging.INFO)
+    config = _load_config()
+    db_path = config['database']['path']
+    
+    with sqlite3.connect(db_path) as conn:
+        drop_tables(conn)
+    
+    with sqlite3.connect(db_path) as conn:
+        create_tables(conn)

@@ -1,3 +1,9 @@
+[database]
+path = "football.db"
+
+[paths]
+processed_data = "processed_data"
+
 [columns]
 league = ['league_id',
                 'league_name',
