@@ -1,6 +1,6 @@
 import sqlite3
 import logging
-import tomllib
+import tomli
 from pathlib import Path
 from typing import Optional
 
@@ -11,7 +11,7 @@ def _load_config() -> dict:
     """Load configuration from config.toml"""
     config_path = Path(__file__).parent.parent / "config.toml"
     with open(config_path, 'rb') as f:
-        return tomllib.load(f)
+        return tomli.load(f)
 
 
 def create_tables(conn: Optional[sqlite3.Connection] = None) -> bool:

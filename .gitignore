@@ -8,3 +8,5 @@ api/transform.ipynb
 __pycache__/
 .DS_Store
 .vscode/
+last_page.txt
+last_query_response.json

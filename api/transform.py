@@ -23,9 +23,10 @@ def transform_leagues(data: Dict[str, Any]) -> pd.DataFrame:
         raise KeyError("Data missing required 'response' key")
     if 'date_pulled' not in data:
         raise KeyError("Data missing required 'date_pulled' key")
-    if data['errors'] != 0:
-        logger.error(f"Error fetching leagues: {data['errors']}")
-        raise ValueError(f"Error fetching leagues: {data['errors']}")
+    if data['errors']:
+        error_msg = f"API returned errors: {data.get('errors')}"
+        logger.error(error_msg)
+        raise ValueError(error_msg)
 
     response = data['response']
     date_pulled = data['date_pulled']
@@ -105,13 +106,6 @@ def transform_players(data: Dict[str, Any]) -> pd.DataFrame:
         KeyError: If required keys are missing from the data structure
         IndexError: If statistics list is empty
     """
-    if 'response' not in data:
-        raise KeyError("Data missing required 'response' key")
-    if 'parameters' not in data:
-        raise KeyError("Data missing required 'parameters' key")
-    if 'date_pulled' not in data:
-        raise KeyError("Data missing required 'date_pulled' key")
-    
     try:
         year = data['parameters']['season']
         league = data['parameters']['league']
@@ -129,6 +123,7 @@ def transform_players(data: Dict[str, Any]) -> pd.DataFrame:
             if 'statistics' not in p or not p['statistics']:
                 logger.warning(f"Skipping player entry {idx}: missing or empty 'statistics'")
                 continue
+            
             player = p['player']
             stats = p['statistics'][0]
             
@@ -241,6 +236,10 @@ def transform_teams(data: Dict[str, Any]) -> pd.DataFrame:
         raise KeyError("Data missing required 'parameters' key")
     if 'date_pulled' not in data:
         raise KeyError("Data missing required 'date_pulled' key")
+    if data['errors']:
+        error_msg = f"API returned errors: {data.get('errors')}"
+        logger.error(error_msg)
+        raise ValueError(error_msg)
     
     try:
         year = data['parameters']['season']

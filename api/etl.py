@@ -1,7 +1,7 @@
 import logging
-import extract
-import transform
-from load import load_data, write_to_csv
+import api.extract as extract
+import api.transform as transform
+from api.load import load_data, write_to_csv
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def etl(league_id: int, season_year: int) -> None:
         load_data(players_df, "players")
         load_data(teams_df, "teams")
         
-        logger.info("Writing data to CSV files...")
+        # logger.info("Writing data to CSV files...")
         write_to_csv(leagues_df, "leagues", league_id, season_year)
         write_to_csv(players_df, "players", league_id, season_year)
         write_to_csv(teams_df, "teams", league_id, season_year)
@@ -53,6 +53,15 @@ def etl(league_id: int, season_year: int) -> None:
         logger.error(f"ETL process failed for league_id={league_id}, season={season_year}: {e}")
         raise
 
+
+def etl_league(league_id: int) -> None:
+    """
+    Execute ETL pipeline for a given league.
+    
+    Args:
+        league_id: The ID of the league to process
+    """
+    pass
 if __name__ == "__main__":
     # Configure logging
     logging.basicConfig(
@@ -61,9 +70,4 @@ if __name__ == "__main__":
     )
     
     etl(39, 2021)
-    # etl(39, 2022)
-    # etl(39, 2023)
-    # etl(40, 2021)
-    # etl(40, 2022)
-    # etl(40, 2023)
     pass

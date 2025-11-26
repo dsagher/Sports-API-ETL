@@ -1,22 +1,21 @@
 import sqlite3
-import tomllib
+import tomli
 import logging
 import pandas as pd
 from typing import Any, Literal
 from pathlib import Path
 
-# Configure logging
+from db.schemas import create_tables
+
 logger = logging.getLogger(__name__)
 
-# Whitelist of allowed table names to prevent SQL injection
 ALLOWED_TABLES = {"leagues", "players", "teams"}
-
 
 def _load_config() -> dict:
     """Load configuration from config.toml"""
     config_path = Path(__file__).parent.parent / "config.toml"
     with open(config_path, 'rb') as f:
-        return tomllib.load(f)
+        return tomli.load(f)
 
 
 def load_data(df: pd.DataFrame, df_name: Literal["leagues", "players", "teams"]) -> None:
@@ -48,16 +47,20 @@ def load_data(df: pd.DataFrame, df_name: Literal["leagues", "players", "teams"])
     values = ["?" for _ in columns]
     
     # Validate that DataFrame has required columns
-    missing_columns = set[Any](columns) - set[Any](df.columns)
+    missing_columns = set(columns) - set(df.columns)
     if missing_columns:
         raise KeyError(f"DataFrame is missing required columns: {missing_columns}")
     
     ordered = df[columns]
-    rows: list[tuple[Any, ...]] = list[tuple[Any, ...]](ordered.itertuples(index=False, name=None)) 
+    rows: list[tuple[Any, ...]] = list(ordered.itertuples(index=False, name=None)) 
     sql = f"INSERT INTO {df_name} ({', '.join(columns)}) VALUES ({', '.join(values)})"
 
     try:
+
+        create_tables()
+
         with sqlite3.connect(db_path) as conn:
+            logging.debug(db_path)
             cursor = conn.cursor()
             cursor.executemany(sql, rows) 
             conn.commit()
@@ -88,6 +91,6 @@ def write_to_csv(df: pd.DataFrame, df_name: str, league_id: int, season_year: in
     logger.info(f"Successfully wrote {len(df)} rows to {csv_path}")
 
 if __name__ == "__main__":
-    leagues = pd.read_csv('processed_data/leagues.csv')
+    leagues = pd.read_csv('processed_data/leagues_39_2021.csv')
     load_data(leagues, "leagues")
-    # pass
+    pass
