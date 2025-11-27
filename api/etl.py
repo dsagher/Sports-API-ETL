@@ -44,9 +44,9 @@ def etl(league_id: int, season_year: int) -> None:
         load_data(teams_df, "teams")
         
         # logger.info("Writing data to CSV files...")
-        write_to_csv(leagues_df, "leagues", league_id, season_year)
-        write_to_csv(players_df, "players", league_id, season_year)
-        write_to_csv(teams_df, "teams", league_id, season_year)
+        # write_to_csv(leagues_df, "leagues", league_id, season_year)
+        # write_to_csv(players_df, "players", league_id, season_year)
+        # write_to_csv(teams_df, "teams", league_id, season_year)
         
         logger.info(f"ETL process completed successfully for league_id={league_id}, season={season_year}")
     except Exception as e:
@@ -69,5 +69,5 @@ if __name__ == "__main__":
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
     
-    etl(39, 2021)
+    etl(40, 2021)
     pass

@@ -10,3 +10,4 @@ __pycache__/
 .vscode/
 last_page.txt
 last_query_response.json
+query_count.txt

@@ -2,7 +2,6 @@ import os
 import logging
 import requests
 import datetime
-import json
 from typing import Dict, Any
 
 # Configure logging
@@ -18,17 +17,74 @@ HEADERS = {
     "x-apisports-key": api_key
 }
 
-
+QUERY_COUNT_FILE_PATH = "query_count.txt"
+PAGE_FILE_PATH = "last_page.txt"
+DATE_FMT = "%m/%d/%Y"
+DAILY_LIMIT = 100
+    
 def get_last_page():
-    if not os.path.exists("last_page.txt"):
+    if not os.path.exists(PAGE_FILE_PATH):
         return 1
-    with open("last_page.txt", "r") as f:
-        return int(f.read())
+    with open(PAGE_FILE_PATH, "r") as f:
+        page = f.read()
+        return int(page)
 
 def write_page(page):
-    with open("last_page.txt", "w") as f:
-        f.write(str(page))
+    with open(PAGE_FILE_PATH, "w") as f:
+        if page == 3:
+            f.write(str(1))
+        else:
+            f.write(page)
     logger.info(f"Wrote last page number ({page}) to last_page.txt")
+
+
+def get_query_count():
+    """
+    Returns (count: int, date_str: str) where date_str is in DATE_FMT.
+    If file doesn't exist, initializes it with count 1 for today.
+    """
+    if not os.path.exists(QUERY_COUNT_FILE_PATH):
+        today_str = datetime.datetime.now().strftime(DATE_FMT)
+        with open(QUERY_COUNT_FILE_PATH, "x") as f:
+            f.write(f"1, {today_str}")
+        return 1, today_str
+
+    with open(QUERY_COUNT_FILE_PATH, "r") as f:
+        content = f.read().strip()
+
+    if not content:
+        today_str = datetime.datetime.now().strftime(DATE_FMT)
+        with open(QUERY_COUNT_FILE_PATH, "w") as f:
+            f.write(f"1, {today_str}")
+        return 1, today_str
+
+    count_str, date_str = content.split(", ")
+    return int(count_str), date_str
+
+    
+def write_query_count():
+    """
+    Increments the query count for the current day.
+    Resets to 1 if the stored date is not today.
+    Raises ValueError if DAILY_LIMIT would be exceeded.
+    """
+    count, stored_date_str = get_query_count()
+
+    today = datetime.datetime.now().date()
+    stored_date = datetime.datetime.strptime(stored_date_str, DATE_FMT).date()
+
+    if stored_date != today:
+        new_count = 1
+        new_date_str = today.strftime(DATE_FMT)
+    else:
+        if count >= DAILY_LIMIT:
+            raise ValueError("API Rate Limit Reached")
+        new_count = count + 1
+        new_date_str = stored_date_str 
+
+    with open(QUERY_COUNT_FILE_PATH, "w") as f:
+        f.write(f"{new_count}, {new_date_str}")
+
 
 def get_leagues(league_id: int) -> Dict[str, Any]:
     """
@@ -50,6 +106,9 @@ def get_leagues(league_id: int) -> Dict[str, Any]:
     try:
         logger.info(f"Fetching leagues for league_id={league_id}")
         response = requests.get(url, headers=HEADERS, timeout=30)
+
+        write_query_count()
+
         response.raise_for_status()
         data = response.json()
         
@@ -92,9 +151,11 @@ def get_players_by_league_season(league_id: int, season_year: int) -> Dict[str, 
             logger.info(f"Fetching players page {page} for league_id={league_id}, season={season_year}")
             
             response = requests.get(url, headers=HEADERS, timeout=30)
+
+            write_query_count()
             response.raise_for_status()
             data = response.json()
-            print("DATA", data)
+
             if 'response' not in data:
                 raise ValueError("API response missing 'response' key")
             if 'errors' in data and data['errors']:
@@ -110,7 +171,6 @@ def get_players_by_league_season(league_id: int, season_year: int) -> Dict[str, 
             
             all_players.extend(players)
             
-            # Check if there are more pages
             paging = data.get('paging', {})
             current_page = paging.get('current', page)
             total_pages = paging.get('total', 1)
@@ -125,6 +185,7 @@ def get_players_by_league_season(league_id: int, season_year: int) -> Dict[str, 
         
 
         write_page(page)
+
         result = {
             'response': all_players,
             'parameters': data.get('parameters', {}),
@@ -162,6 +223,7 @@ def get_teams_by_league_season(league_id: int, season_year: int) -> Dict[str, An
     try:
         logger.info(f"Fetching teams for league_id={league_id}, season={season_year}")
         response = requests.get(url, headers=HEADERS, timeout=30)
+        write_query_count()
         response.raise_for_status()
         data = response.json()
         
