@@ -21,7 +21,7 @@ QUERY_COUNT_FILE_PATH = "query_count.txt"
 PAGE_FILE_PATH = "last_page.txt"
 DATE_FMT = "%m/%d/%Y"
 DAILY_LIMIT = 100
-    
+PAGE_LIMIT = 3
 def get_last_page():
     if not os.path.exists(PAGE_FILE_PATH):
         return 1
@@ -31,7 +31,7 @@ def get_last_page():
 
 def write_page(page):
     with open(PAGE_FILE_PATH, "w") as f:
-        if page == 3:
+        if page == PAGE_LIMIT:
             f.write(str(1))
         else:
             f.write(page)
@@ -144,7 +144,6 @@ def get_players_by_league_season(league_id: int, season_year: int) -> Dict[str, 
     date_pulled = datetime.datetime.now().strftime('%m/%d/%Y')
     all_players = []
     page = get_last_page()
-    PAGE_LIMIT = 3
     try:
         while True:
             url = f"{BASE_URL}/players?season={season_year}&league={league_id}&page={page}"

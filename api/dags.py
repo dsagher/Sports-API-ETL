@@ -5,13 +5,8 @@ from airflow import DAG
 from api.etl import etl
 
 
-def run_etl_task(league_id, season_year):
-    """Wrapper function to call etl with required arguments"""
-    etl(league_id, season_year)
-
-
 default_args = {
-    "depends_on_past": True,  # Each run waits for previous to complete
+    "depends_on_past": True, 
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
 }
@@ -21,11 +16,9 @@ with DAG(
     default_args=default_args,
     description="Main default 482 Final Dag",
     schedule=timedelta(days=1),
-    start_date=datetime(2024, 1, 1),  # Fixed start date (not datetime.now())
-    # stop_date=datetime(2025, 12, 15),
-    catchup=True,  # Process all intervals sequentially
-    # params={"league_id": Param(39), 'season_year': Param(2022)},
-    max_active_runs=1,  # Only one DAG run at a time (ensures sequential execution)
+    start_date=datetime(2024, 1, 1),  
+    catchup=True, 
+    max_active_runs=1, 
     tags=["etl", "sports"]
 ) as dag:
     t1 = PythonOperator(
