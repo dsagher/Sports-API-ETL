@@ -18,8 +18,10 @@ final_project/
 ├── db/                      # Database schema definitions
 │   ├── __init__.py
 │   └── schemas.py           # SQLite table schemas and creation
+├── analysis.ipynb           # Data analysis notebook
 ├── config.toml              # Configuration file
-└── requirements.txt         # Python dependencies
+├── requirements.txt         # Python dependencies
+└── README.md                # This file
 ```
 
 ## ⚠️ Work in Progress
